@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "erl_dist_mcp": {
+      "type": "stdio",
+      "command": "target/debug/erl_dist_mcp",
+      "args": [
+        "--mode=elixir",
+        "--allow-eval"
+      ],
+      "env": {}
+    }
+  }
+}

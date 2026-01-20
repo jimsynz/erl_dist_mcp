@@ -1,0 +1,52 @@
+[package]
+name = "erl_dist_mcp"
+version = "0.1.0"
+edition = "2024"
+description = "Erlang Distribution MCP Server - connects to Erlang/BEAM nodes for introspection and debugging"
+license = "Apache-2.0"
+repository = "https://github.com/jimsynz/erl_dist_mcp"
+readme = "README.md"
+keywords = ["erlang", "beam", "mcp", "debugging", "elixir"]
+categories = ["development-tools::debugging", "command-line-utilities"]
+
+[dependencies]
+# MCP server
+rmcp = { version = "0.13", features = ["server", "transport-io", "macros"] }
+
+# Erlang distribution protocol
+erl_dist = "0.7"
+eetf = "0.11"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["compat"] }
+futures-io = "0.3"
+
+# Serialisation
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "1"
+
+# Error handling
+thiserror = "2"
+
+# Logging/tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# CLI parsing
+clap = { version = "4", features = ["derive"] }
+
+# Tracing support
+uuid = { version = "1", features = ["v4"] }
+tempfile = "3"
+
+# Time handling
+chrono = "0.4"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
