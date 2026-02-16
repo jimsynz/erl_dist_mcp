@@ -24,25 +24,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install git-cliff
+        run: cargo install git-cliff
+
       - name: Generate changelog
         id: changelog
         run: |
-          # Get previous tag
-          PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
-
-          # Generate changelog
-          if [ -z "$PREVIOUS_TAG" ]; then
-            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
-          else
-            CHANGELOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
-          fi
-
-          # Save changelog to file
-          echo "$CHANGELOG" > CHANGELOG.txt
-
-          # Set output for use in release
+          NOTES=$(git cliff --latest --strip header)
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Release
@@ -164,3 +154,18 @@ jobs:
           asset_path: ./erl_dist_mcp-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.zip
           asset_name: erl_dist_mcp-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.zip
           asset_content_type: application/zip
+
+  publish-crate:
+    name: Publish to crates.io
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
